@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/lunemec/eve-bot-pkg/pkg/token"
+	"github.com/lunemec/eve-bot-pkg/token"
 
 	"github.com/antihax/goesi"
 	"github.com/antihax/goesi/esi"
