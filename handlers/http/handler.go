@@ -1,14 +1,12 @@
 package handler
 
 import (
-	"encoding/gob"
 	"net/http"
 	"os"
 
 	"github.com/lunemec/eve-bot-pkg/token"
 
 	"github.com/antihax/goesi"
-	"github.com/antihax/goesi/esi"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"github.com/go-chi/render"
@@ -26,23 +24,11 @@ type handler struct {
 	router       http.Handler
 	store        *sessions.CookieStore
 	scopes       []string
-
-	cache cache
-}
-
-type nameCache map[int32]esi.GetUniverseTypesTypeIdOk
-type cache struct {
-	names nameCache
 }
 
 type handlerLogger interface {
 	Infow(string, ...interface{})
 	Errorw(string, ...interface{})
-}
-
-func init() {
-	gob.Register(goesi.VerifyResponse{})
-	gob.Register(oauth2.Token{})
 }
 
 // New constructs new API http handler.
@@ -59,9 +45,6 @@ func New(signalChan chan os.Signal, log handlerLogger, client *http.Client, toke
 		router:       r,
 		store:        sessions.NewCookieStore(secretKey),
 		scopes:       scopes,
-		cache: cache{
-			names: make(nameCache),
-		},
 	}
 
 	r.Use(middleware.RequestID)
