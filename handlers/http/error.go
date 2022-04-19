@@ -2,6 +2,8 @@ package handler
 
 import (
 	"net/http"
+
+	"go.uber.org/zap"
 )
 
 type handlerError struct {
@@ -15,11 +17,11 @@ func (e handlerError) Error() string {
 
 type errorHandlerFunc func(http.ResponseWriter, *http.Request) error
 
-func ErrorHandler(handler errorHandlerFunc, log handlerLogger) http.HandlerFunc {
+func ErrorHandler(handler errorHandlerFunc, log *zap.Logger) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := handler(w, r)
 		if err != nil {
-			log.Errorw("handler error", "error", err)
+			log.Error("handler error", zap.Error(err))
 			switch v := err.(type) {
 			case handlerError:
 				http.Error(w, v.Error(), v.code)

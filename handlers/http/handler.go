@@ -9,23 +9,19 @@ import (
 	"github.com/go-chi/render"
 	"github.com/gorilla/sessions"
 	"github.com/pkg/errors"
+	"go.uber.org/zap"
 	"golang.org/x/oauth2"
 )
 
 type handler struct {
 	done         chan<- struct{}
-	log          handlerLogger
+	log          *zap.Logger
 	tokenStorage tokenStorage
 	esi          *goesi.APIClient
 	sso          *goesi.SSOAuthenticator
 	router       http.Handler
 	store        *sessions.CookieStore
 	scopes       []string
-}
-
-type handlerLogger interface {
-	Infow(string, ...interface{})
-	Errorw(string, ...interface{})
 }
 
 type tokenStorage interface {
@@ -35,7 +31,7 @@ type tokenStorage interface {
 // New constructs new API http handler.
 func New(
 	done chan<- struct{},
-	log handlerLogger,
+	log *zap.Logger,
 	client *http.Client,
 	userAgent string,
 	tokenStorage tokenStorage,
