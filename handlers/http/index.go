@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"syscall"
 	"time"
 
 	"github.com/pkg/errors"
@@ -28,10 +27,10 @@ func (h *handler) indexHandler(w http.ResponseWriter, r *http.Request) error {
 		return errors.Wrap(err, "unable to save token")
 	}
 	_, _ = w.Write([]byte("logged in successfully"))
-	// Spawn a goroutine that will send SIGTERM in 1s.
+	// Spawn a goroutine that will send done in 1s.
 	go func() {
 		time.Sleep(1 * time.Second)
-		h.signalChan <- syscall.SIGTERM
+		h.done <- struct{}{}
 	}()
 	return nil
 }

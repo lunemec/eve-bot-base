@@ -13,7 +13,7 @@ func (h *handler) loginHandler(w http.ResponseWriter, r *http.Request) error {
 		return errors.Wrap(err, "unable to create random state")
 	}
 
-	session, _ := h.store.New(r, "eve-quartermaster-session")
+	session, _ := h.store.New(r, "eve-bot-session")
 	session.Values["state"] = state.String()
 	err = session.Save(r, w)
 	if err != nil {

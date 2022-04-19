@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"os"
 
 	"github.com/antihax/goesi"
 	"github.com/go-chi/chi"
@@ -14,7 +13,7 @@ import (
 )
 
 type handler struct {
-	signalChan   chan os.Signal
+	done         chan<- struct{}
 	log          handlerLogger
 	tokenStorage tokenStorage
 	esi          *goesi.APIClient
@@ -34,12 +33,22 @@ type tokenStorage interface {
 }
 
 // New constructs new API http handler.
-func New(signalChan chan os.Signal, log handlerLogger, client *http.Client, tokenStorage tokenStorage, secretKey []byte, clientID, ssoSecret string, callbackURL string, scopes []string) http.Handler {
-	esi := goesi.NewAPIClient(client, "EVE Quartermaster (lu.nemec@gmail.com)")
+func New(
+	done chan<- struct{},
+	log handlerLogger,
+	client *http.Client,
+	userAgent string,
+	tokenStorage tokenStorage,
+	secretKey []byte,
+	clientID, ssoSecret string,
+	callbackURL string,
+	scopes []string,
+) http.Handler {
+	esi := goesi.NewAPIClient(client, userAgent)
 	sso := goesi.NewSSOAuthenticatorV2(client, clientID, ssoSecret, callbackURL, scopes)
 	r := chi.NewRouter()
 	h := handler{
-		signalChan:   signalChan,
+		done:         done,
 		log:          log,
 		tokenStorage: tokenStorage,
 		esi:          esi,
@@ -65,7 +74,7 @@ func (h *handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *handler) session(r *http.Request) *sessions.Session {
-	sess, _ := h.store.Get(r, "eve-quartermaster-session")
+	sess, _ := h.store.Get(r, "eve-bot-session")
 	return sess
 }
 
