@@ -9,6 +9,13 @@ import (
 	"golang.org/x/oauth2"
 )
 
+type Service interface {
+	Token() (*oauth2.Token, error)
+	TokenSource() (oauth2.TokenSource, error)
+	Verify() (*goesi.VerifyResponse, error)
+	SaveToken(token oauth2.Token) error
+}
+
 // AuthRepository is interface for accessing token data.
 type AuthRepository interface {
 	Read() (oauth2.Token, error)
