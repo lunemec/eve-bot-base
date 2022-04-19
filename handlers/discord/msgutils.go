@@ -5,11 +5,13 @@ import (
 	"strings"
 )
 
-const discordMaxDescriptionLength = 4096
+// DiscordMaxDescriptionLength is maximum length of description field in 1 message.
+// It can be used as maxLength parameter for SplitMessageParts function.
+const DiscordMaxDescriptionLength = 4096
 
-// splitMessageParts splits message parts by max length allowed
+// SplitMessageParts splits message parts by max length allowed
 // by discord into list of messages to be sent.
-func splitMessageParts(slice []string, maxLength int) []string {
+func SplitMessageParts(slice []string, maxLength int) []string {
 	var messages []string
 
 	var (

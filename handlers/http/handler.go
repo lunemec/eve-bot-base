@@ -4,8 +4,6 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/lunemec/eve-bot-pkg/token"
-
 	"github.com/antihax/goesi"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
@@ -18,7 +16,7 @@ import (
 type handler struct {
 	signalChan   chan os.Signal
 	log          handlerLogger
-	tokenStorage token.Storage
+	tokenStorage tokenStorage
 	esi          *goesi.APIClient
 	sso          *goesi.SSOAuthenticator
 	router       http.Handler
@@ -31,8 +29,12 @@ type handlerLogger interface {
 	Errorw(string, ...interface{})
 }
 
+type tokenStorage interface {
+	Write(oauth2.Token) error
+}
+
 // New constructs new API http handler.
-func New(signalChan chan os.Signal, log handlerLogger, client *http.Client, tokenStorage token.Storage, secretKey []byte, clientID, ssoSecret string, callbackURL string, scopes []string) http.Handler {
+func New(signalChan chan os.Signal, log handlerLogger, client *http.Client, tokenStorage tokenStorage, secretKey []byte, clientID, ssoSecret string, callbackURL string, scopes []string) http.Handler {
 	esi := goesi.NewAPIClient(client, "EVE Quartermaster (lu.nemec@gmail.com)")
 	sso := goesi.NewSSOAuthenticatorV2(client, clientID, ssoSecret, callbackURL, scopes)
 	r := chi.NewRouter()
