@@ -36,7 +36,7 @@ func NewService(
 	clientID, ssoSecret, callbackURL string,
 	scopes []string,
 ) *authService {
-	sso := goesi.NewSSOAuthenticator(client, clientID, ssoSecret, callbackURL, scopes)
+	sso := goesi.NewSSOAuthenticatorV2(client, clientID, ssoSecret, callbackURL, scopes)
 	return &authService{
 		authRepository: authRepository,
 		sso:            sso,
